@@ -2,7 +2,7 @@
 name = "free"
 version = "0.1.0"
 edition = "2024"
-description = "Memory check tool"
+description = "Memory check command"
 license = "MIT"
 
 [dependencies]
