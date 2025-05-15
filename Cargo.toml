@@ -2,6 +2,8 @@
 name = "free"
 version = "0.1.0"
 edition = "2024"
+description = "Memory check tool"
+license = "MIT"
 
 [dependencies]
 sysinfo = "0.35.1"
