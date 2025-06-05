@@ -89,7 +89,7 @@ fn main() {
         for (i, cell) in row.iter().enumerate() {
             s.push(' ');
             if let Some((color, reset)) = colors {
-                if i > 1 && !cell.is_empty() {
+                if (i == 2 || i == 3) && !cell.is_empty() {
                     s.push_str(color);
                     s.push_str(&format!("{:>width$}", cell, width = col_widths[i]));
                     s.push_str(reset);
