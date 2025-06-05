@@ -26,16 +26,19 @@ fn main() {
     let used_swap = format_value(sys.used_swap(), divisor);
     let free_swap = total_swap.saturating_sub(used_swap);
 
+    let bold = "\x1b[1m";
+    let reset = "\x1b[0m";
+
     println!(
-        "{:<15} {:>10} {:>10} {:>10} {:>10} {:>12} {:>12}",
-        "", "total", "used", "free", "shared", "buff/cache", "available"
+        "{:<15} {}{:>10}{} {}{:>10}{} {}{:>10}{} {}{:>10}{} {}{:>12}{} {}{:>12}{}",
+        "", bold, "total", reset, bold, "used", reset, bold, "free", reset, bold, "shared", reset, bold, "buff/cache", reset, bold, "available", reset
     );
     println!(
-        "{:<15} {:>10} {:>10} {:>10} {:>10} {:>12} {:>12}",
-        "Mem.:", total_memory, used_memory, free_memory, 0, buff_cache, available_memory
+        "{}{:<15}{} {:>10} {:>10} {:>10} {:>10} {:>12} {:>12}",
+        bold, "Mem.:", reset, total_memory, used_memory, free_memory, 0, buff_cache, available_memory
     );
     println!(
-        "{:<15} {:>10} {:>10} {:>10}",
-        "Swap:", total_swap, used_swap, free_swap
+        "{}{:<15}{} {:>10} {:>10} {:>10}",
+        bold, "Swap:", reset, total_swap, used_swap, free_swap
     );
 }
