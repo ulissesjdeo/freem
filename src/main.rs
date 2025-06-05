@@ -41,16 +41,78 @@ fn main() {
     let (mem_color, mem_reset) = get_color(used_memory, total_memory);
     let (swap_color, swap_reset) = get_color(used_swap, total_swap);
 
-    println!(
-        "{:<5}  {}{:>8}{}  {}{:>8}{}  {}{:>8}{}  {}{:>6}{}  {}{:>10}{}  {}{:>9}{}",
-        "", bold, "total", reset, bold, "used", reset, bold, "free", reset, bold, "shared", reset, bold, "buff/cache", reset, bold, "available", reset
-    );
-    println!(
-        "{}{:<5}{}  {:>8}  {}{:>8}{}  {}{:>8}{}  {:>6}  {:>10}  {:>9}",
-        bold, "Mem.:", reset, total_memory, mem_color, used_memory, mem_reset, mem_color, free_memory, mem_reset, 0, buff_cache, available_memory
-    );
-    println!(
-        "{}{:<5}{}  {:>8}  {}{:>8}{}  {}{:>8}{}",
-        bold, "Swap:", reset, total_swap, swap_color, used_swap, swap_reset, swap_color, free_swap, swap_reset
-    );
+    let headers = ["", "total", "used", "free", "shared", "buff/cache", "available"];
+    let mem_row = [
+        "Memory".to_string(),
+        total_memory.to_string(),
+        used_memory.to_string(),
+        free_memory.to_string(),
+        "0".to_string(),
+        buff_cache.to_string(),
+        available_memory.to_string(),
+    ];
+    let swap_row = [
+        "Swap".to_string(),
+        total_swap.to_string(),
+        used_swap.to_string(),
+        free_swap.to_string(),
+        String::new(),
+        String::new(),
+        String::new(),
+    ];
+
+    let mut col_widths = vec![0; headers.len()];
+    for (i, h) in headers.iter().enumerate() {
+        col_widths[i] = h.len();
+    }
+    for (i, v) in mem_row.iter().enumerate() {
+        col_widths[i] = col_widths[i].max(v.len());
+    }
+    for (i, v) in swap_row.iter().enumerate() {
+        col_widths[i] = col_widths[i].max(v.len());
+    }
+
+    fn build_border(left: &str, sep: &str, right: &str, col_widths: &[usize]) -> String {
+        let mut s = String::new();
+        s.push_str(left);
+        for (i, w) in col_widths.iter().enumerate() {
+            if i > 0 { s.push_str(sep); }
+            s.push_str(&"─".repeat(*w + 2));
+        }
+        s.push_str(right);
+        s
+    }
+
+    fn build_row(row: &[String], col_widths: &[usize], colors: Option<(&str, &str)>) -> String {
+        let mut s = String::new();
+        s.push('│');
+        for (i, cell) in row.iter().enumerate() {
+            s.push(' ');
+            if let Some((color, reset)) = colors {
+                if i > 1 && !cell.is_empty() {
+                    s.push_str(color);
+                    s.push_str(&format!("{:>width$}", cell, width = col_widths[i]));
+                    s.push_str(reset);
+                } else {
+                    s.push_str(&format!("{:<width$}", cell, width = col_widths[i]));
+                }
+            } else {
+                s.push_str(&format!("{:<width$}", cell, width = col_widths[i]));
+            }
+            s.push(' ');
+            s.push('│');
+        }
+        s
+    }
+
+    let top = build_border("┌", "┬", "┐", &col_widths);
+    let sep = build_border("├", "┼", "┤", &col_widths);
+    let bottom = build_border("└", "┴", "┘", &col_widths);
+
+    println!("{}", top);
+    println!("{}", build_row(&headers.iter().map(|s| s.to_string()).collect::<Vec<_>>(), &col_widths, None));
+    println!("{}", sep);
+    println!("{}", build_row(&mem_row, &col_widths, Some((mem_color, mem_reset))));
+    println!("{}", build_row(&swap_row, &col_widths, Some((swap_color, swap_reset))));
+    println!("{}", bottom);
 }
