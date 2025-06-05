@@ -42,15 +42,15 @@ fn main() {
     let (swap_color, swap_reset) = get_color(used_swap, total_swap);
 
     println!(
-        "{:<15} {}{:>10}{} {}{:>10}{} {}{:>10}{} {}{:>10}{} {}{:>12}{} {}{:>12}{}",
+        "{:<5}  {}{:>8}{}  {}{:>8}{}  {}{:>8}{}  {}{:>6}{}  {}{:>10}{}  {}{:>9}{}",
         "", bold, "total", reset, bold, "used", reset, bold, "free", reset, bold, "shared", reset, bold, "buff/cache", reset, bold, "available", reset
     );
     println!(
-        "{}{:<15}{} {:>10} {}{:>10}{} {}{:>10}{} {:>10} {:>12} {:>12}",
+        "{}{:<5}{}  {:>8}  {}{:>8}{}  {}{:>8}{}  {:>6}  {:>10}  {:>9}",
         bold, "Mem.:", reset, total_memory, mem_color, used_memory, mem_reset, mem_color, free_memory, mem_reset, 0, buff_cache, available_memory
     );
     println!(
-        "{}{:<15}{} {:>10} {}{:>10}{} {}{:>10}{}",
+        "{}{:<5}{}  {:>8}  {}{:>8}{}  {}{:>8}{}",
         bold, "Swap:", reset, total_swap, swap_color, used_swap, swap_reset, swap_color, free_swap, swap_reset
     );
 }
