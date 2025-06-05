@@ -1,5 +1,5 @@
-use sysinfo::System;
 use std::env;
+use sysinfo::System;
 
 fn format_value(value: u64, divisor: u64) -> u64 {
     value / divisor

@@ -17,8 +17,27 @@ everywhere.
 
 ### Usage
 
-`freem`
+```
+freem
+                     total       used       free     shared   buff/cache    available
+Mem.:             28943804    9640060   19303744          0            0     19303744
+Swap:              1835008          0    1835008
+```
 
-`freem -m` (megabytes output)
+With you wanna see in megabytes, just use `-m`
 
-`freem -g` (gigabytes output)
+```
+freem -m
+                     total       used       free     shared   buff/cache    available
+Mem.:                28265       9196      19069          0            0        19069
+Swap:                 1792          0       1792
+```
+
+Or even gigabytes just `-g`
+
+```
+freem -g
+                     total       used       free     shared   buff/cache    available
+Mem.:                   27          9         18          0            0           18
+Swap:                    1          0          1
+```
