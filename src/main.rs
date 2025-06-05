@@ -83,21 +83,27 @@ fn main() {
         s
     }
 
-    fn build_row(row: &[String], col_widths: &[usize], colors: Option<(&str, &str)>) -> String {
+    fn build_row(row: &[String], col_widths: &[usize], colors: Option<(&str, &str)>, bold: &str, reset: &str, bold_indices: &[usize]) -> String {
         let mut s = String::new();
         s.push('│');
         for (i, cell) in row.iter().enumerate() {
             s.push(' ');
-            if let Some((color, reset)) = colors {
+            if bold_indices.contains(&i) {
+                s.push_str(bold);
+            }
+            if let Some((color, color_reset)) = colors {
                 if (i == 2 || i == 3) && !cell.is_empty() {
                     s.push_str(color);
                     s.push_str(&format!("{:>width$}", cell, width = col_widths[i]));
-                    s.push_str(reset);
+                    s.push_str(color_reset);
                 } else {
                     s.push_str(&format!("{:<width$}", cell, width = col_widths[i]));
                 }
             } else {
                 s.push_str(&format!("{:<width$}", cell, width = col_widths[i]));
+            }
+            if bold_indices.contains(&i) {
+                s.push_str(reset);
             }
             s.push(' ');
             s.push('│');
@@ -110,9 +116,11 @@ fn main() {
     let bottom = build_border("└", "┴", "┘", &col_widths);
 
     println!("{}", top);
-    println!("{}", build_row(&headers.iter().map(|s| s.to_string()).collect::<Vec<_>>(), &col_widths, None));
+    let header_row: Vec<String> = headers.iter().map(|s| s.to_string()).collect();
+    let bold_indices: Vec<usize> = (0..headers.len()).collect();
+    println!("{}", build_row(&header_row, &col_widths, None, bold, reset, &bold_indices));
     println!("{}", sep);
-    println!("{}", build_row(&mem_row, &col_widths, Some((mem_color, mem_reset))));
-    println!("{}", build_row(&swap_row, &col_widths, Some((swap_color, swap_reset))));
+    println!("{}", build_row(&mem_row, &col_widths, Some((mem_color, mem_reset)), bold, reset, &[0]));
+    println!("{}", build_row(&swap_row, &col_widths, Some((swap_color, swap_reset)), bold, reset, &[0]));
     println!("{}", bottom);
 }
