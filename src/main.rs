@@ -37,6 +37,7 @@ fn main() {
 
     let bold = "\x1b[1m";
     let reset = "\x1b[0m";
+    let dim = "\x1b[2m";
 
     let (mem_color, mem_reset) = get_color(used_memory, total_memory);
     let (swap_color, swap_reset) = get_color(used_swap, total_swap);
@@ -83,13 +84,15 @@ fn main() {
         s
     }
 
-    fn build_row(row: &[String], col_widths: &[usize], colors: Option<(&str, &str)>, bold: &str, reset: &str, bold_indices: &[usize]) -> String {
+    fn build_row(row: &[String], col_widths: &[usize], colors: Option<(&str, &str)>, bold: &str, reset: &str, bold_indices: &[usize], dim_indices: &[usize], dim: &str) -> String {
         let mut s = String::new();
         s.push('│');
         for (i, cell) in row.iter().enumerate() {
             s.push(' ');
             if bold_indices.contains(&i) {
                 s.push_str(bold);
+            } else if dim_indices.contains(&i) {
+                s.push_str(dim);
             }
             if let Some((color, color_reset)) = colors {
                 if (i == 2 || i == 3) && !cell.is_empty() {
@@ -102,7 +105,7 @@ fn main() {
             } else {
                 s.push_str(&format!("{:<width$}", cell, width = col_widths[i]));
             }
-            if bold_indices.contains(&i) {
+            if bold_indices.contains(&i) || dim_indices.contains(&i) {
                 s.push_str(reset);
             }
             s.push(' ');
@@ -118,9 +121,10 @@ fn main() {
     println!("{}", top);
     let header_row: Vec<String> = headers.iter().map(|s| s.to_string()).collect();
     let bold_indices: Vec<usize> = (0..headers.len()).collect();
-    println!("{}", build_row(&header_row, &col_widths, None, bold, reset, &bold_indices));
+    let dim_indices: Vec<usize> = vec![];
+    println!("{}", build_row(&header_row, &col_widths, None, bold, reset, &bold_indices, &dim_indices, dim));
     println!("{}", sep);
-    println!("{}", build_row(&mem_row, &col_widths, Some((mem_color, mem_reset)), bold, reset, &[0]));
-    println!("{}", build_row(&swap_row, &col_widths, Some((swap_color, swap_reset)), bold, reset, &[0]));
+    println!("{}", build_row(&mem_row, &col_widths, Some((mem_color, mem_reset)), bold, reset, &[0], &[4,5], dim));
+    println!("{}", build_row(&swap_row, &col_widths, Some((swap_color, swap_reset)), bold, reset, &[0], &[4,5], dim));
     println!("{}", bottom);
 }
