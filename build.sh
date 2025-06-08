@@ -3,4 +3,6 @@ set -e
 
 cargo build --release
 
-upx --ultra-brute --lzma target/release/freem.exe
+mv target/release/freem.exe .
+
+upx --ultra-brute --lzma freem.exe
