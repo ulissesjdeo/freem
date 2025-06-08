@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cargo build --release
+RUSTFLAGS="-Zlocation-detail=none -Zfmt-debug=none" cargo +nightly build --release
 
 mv target/release/freem.exe .
 
