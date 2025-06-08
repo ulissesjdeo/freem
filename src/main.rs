@@ -1,4 +1,4 @@
-use std::env;
+use std::env::args;
 use sysinfo::System;
 
 fn format_value(value: u64, divisor: u64) -> u64 {
@@ -15,7 +15,7 @@ fn get_color(used: u64, total: u64) -> (&'static str, &'static str) {
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = args().collect();
     let divisor = match args.get(1).map(|s| s.as_str()) {
         Some("-m") => 1024 * 1024,
         Some("-g") => 1024 * 1024 * 1024,
