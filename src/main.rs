@@ -14,6 +14,15 @@ fn get_color(used: u64, total: u64) -> (&'static str, &'static str) {
     }
 }
 
+struct RowFormat<'a> {
+    colors: Option<(&'a str, &'a str)>,
+    bold: &'a str,
+    reset: &'a str,
+    bold_indices: &'a [usize],
+    dim_indices: &'a [usize],
+    dim: &'a str,
+}
+
 fn main() {
     let args: Vec<String> = args().collect();
     let divisor = match args.get(1).map(|s| s.as_str()) {
@@ -42,7 +51,15 @@ fn main() {
     let (mem_color, mem_reset) = get_color(used_memory, total_memory);
     let (swap_color, swap_reset) = get_color(used_swap, total_swap);
 
-    let headers = ["", "total", "used", "free", "shared", "buff/cache", "available"];
+    let headers = [
+        "",
+        "total",
+        "used",
+        "free",
+        "shared",
+        "buff/cache",
+        "available",
+    ];
     let mem_row = [
         "Memory".to_string(),
         total_memory.to_string(),
@@ -77,24 +94,26 @@ fn main() {
         let mut s = String::new();
         s.push_str(left);
         for (i, w) in col_widths.iter().enumerate() {
-            if i > 0 { s.push_str(sep); }
+            if i > 0 {
+                s.push_str(sep);
+            }
             s.push_str(&"─".repeat(*w + 2));
         }
         s.push_str(right);
         s
     }
 
-    fn build_row(row: &[String], col_widths: &[usize], colors: Option<(&str, &str)>, bold: &str, reset: &str, bold_indices: &[usize], dim_indices: &[usize], dim: &str) -> String {
+    fn build_row(row: &[String], col_widths: &[usize], format: &RowFormat) -> String {
         let mut s = String::new();
         s.push('│');
         for (i, cell) in row.iter().enumerate() {
             s.push(' ');
-            if bold_indices.contains(&i) {
-                s.push_str(bold);
-            } else if dim_indices.contains(&i) {
-                s.push_str(dim);
+            if format.bold_indices.contains(&i) {
+                s.push_str(format.bold);
+            } else if format.dim_indices.contains(&i) {
+                s.push_str(format.dim);
             }
-            if let Some((color, color_reset)) = colors {
+            if let Some((color, color_reset)) = format.colors {
                 if (i == 2 || i == 3) && !cell.is_empty() {
                     s.push_str(color);
                     s.push_str(&format!("{:>width$}", cell, width = col_widths[i]));
@@ -105,8 +124,8 @@ fn main() {
             } else {
                 s.push_str(&format!("{:<width$}", cell, width = col_widths[i]));
             }
-            if bold_indices.contains(&i) || dim_indices.contains(&i) {
-                s.push_str(reset);
+            if format.bold_indices.contains(&i) || format.dim_indices.contains(&i) {
+                s.push_str(format.reset);
             }
             s.push(' ');
             s.push('│');
@@ -122,9 +141,38 @@ fn main() {
     let header_row: Vec<String> = headers.iter().map(|s| s.to_string()).collect();
     let bold_indices: Vec<usize> = (0..headers.len()).collect();
     let dim_indices: Vec<usize> = vec![];
-    println!("{}", build_row(&header_row, &col_widths, None, bold, reset, &bold_indices, &dim_indices, dim));
+
+    let header_format = RowFormat {
+        colors: None,
+        bold,
+        reset,
+        bold_indices: &bold_indices,
+        dim_indices: &dim_indices,
+        dim,
+    };
+    println!("{}", build_row(&header_row, &col_widths, &header_format));
+
     println!("{}", sep);
-    println!("{}", build_row(&mem_row, &col_widths, Some((mem_color, mem_reset)), bold, reset, &[0], &[4,5], dim));
-    println!("{}", build_row(&swap_row, &col_widths, Some((swap_color, swap_reset)), bold, reset, &[0], &[4,5], dim));
+
+    let mem_format = RowFormat {
+        colors: Some((mem_color, mem_reset)),
+        bold,
+        reset,
+        bold_indices: &[0],
+        dim_indices: &[4, 5],
+        dim,
+    };
+    println!("{}", build_row(&mem_row, &col_widths, &mem_format));
+
+    let swap_format = RowFormat {
+        colors: Some((swap_color, swap_reset)),
+        bold,
+        reset,
+        bold_indices: &[0],
+        dim_indices: &[4, 5],
+        dim,
+    };
+    println!("{}", build_row(&swap_row, &col_widths, &swap_format));
+
     println!("{}", bottom);
 }
